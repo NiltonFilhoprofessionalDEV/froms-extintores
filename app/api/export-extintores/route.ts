@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+﻿import { NextResponse } from "next/server";
 import * as XLSX from "xlsx";
 import { assertAdminAccess, getSupabaseAdmin } from "@/lib/admin-api";
 
@@ -25,25 +25,25 @@ export async function GET(request: Request) {
   }
 
   const rows = (data ?? []).map((row) => ({
-    CÓDIGO: row.codigo,
-    SETOR: row.pavimento,
+    "CODIGO": row.codigo,
+    "SETOR": row.pavimento,
     "LOCAL DETALHADO": row.local,
-    "NÚMERO DO INMETRO": row.n_inmetro,
-    TIPO: row.tipo,
-    TAMANHO: row.tamanho,
+    "NUMERO DO INMETRO": row.n_inmetro,
+    "TIPO": row.tipo,
+    "TAMANHO": row.tamanho,
     "CAPACIDADE EXTINTORA": row.capacidade,
-    "VENCIMENTO MANUTENÇÃO NÍVEL 2": formatDateBr(row.vencimento_nivel_2),
-    "VENCIMENTO MANUTENÇÃO NÍVEL 3": formatDateBr(row.vencimento_nivel_3)
+    "VENCIMENTO MANUTENCAO NIVEL 2": formatDateBr(row.vencimento_nivel_2),
+    "VENCIMENTO MANUTENCAO NIVEL 3": formatDateBr(row.vencimento_nivel_3)
   }));
 
-  const worksheet = XLSX.utils.json_to_sheet(rows.length ? rows : [{ CÓDIGO: "" }]);
+  const worksheet = XLSX.utils.json_to_sheet(rows.length ? rows : [{ "CODIGO": "" }]);
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, "Extintores");
 
-  const buffer = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" }) as Buffer;
+  const arrayBuffer = XLSX.write(workbook, { type: "array", bookType: "xlsx" }) as ArrayBuffer;
   const stamp = new Date().toISOString().slice(0, 10);
 
-  return new NextResponse(buffer, {
+  return new NextResponse(arrayBuffer, {
     status: 200,
     headers: {
       "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

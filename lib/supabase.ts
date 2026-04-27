@@ -19,7 +19,7 @@ export const supabase = createClient(
 
 export const supabaseAdmin =
   supabaseServiceRole != null
-    ? createClient(supabaseUrl, supabaseServiceRole, {
+    ? createClient(assertEnv("NEXT_PUBLIC_SUPABASE_URL", supabaseUrl), supabaseServiceRole, {
         auth: { persistSession: false }
       })
     : null;
