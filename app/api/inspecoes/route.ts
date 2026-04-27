@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabase, supabaseAdmin } from "@/lib/supabase";
+import { getSupabase, getSupabaseAdminOrNull } from "@/lib/supabase";
 
 type Body = {
   extintor_id?: string;
@@ -23,7 +23,7 @@ function isRespostaValida(value: unknown): value is Resposta {
 }
 
 export async function POST(request: Request) {
-  const client = supabaseAdmin ?? supabase;
+  const client = getSupabaseAdminOrNull() ?? getSupabase();
   const body = (await request.json()) as Body;
 
   if (

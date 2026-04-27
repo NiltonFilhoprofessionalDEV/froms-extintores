@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { supabase, supabaseAdmin } from "@/lib/supabase";
+import { getSupabase, getSupabaseAdminOrNull } from "@/lib/supabase";
 
 export const dynamic = "force-dynamic";
 
@@ -33,7 +33,7 @@ const PERGUNTAS = [
 ] as const;
 
 export default async function HistoricoPage() {
-  const client = supabaseAdmin ?? supabase;
+  const client = getSupabaseAdminOrNull() ?? getSupabase();
   const { data, error } = await client
     .from("inspecoes")
     .select(

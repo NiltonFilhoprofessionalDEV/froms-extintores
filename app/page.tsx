@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { supabase, supabaseAdmin } from "@/lib/supabase";
+import { getSupabase, getSupabaseAdminOrNull } from "@/lib/supabase";
 import type { ExtintorStatusMes, StatusMesPainel } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const client = supabaseAdmin ?? supabase;
+  const client = getSupabaseAdminOrNull() ?? getSupabase();
   const { data, error } = await client
     .from("vw_extintores_status_mes")
     .select("codigo,status_mes")

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase";
+import { getSupabaseAdminOrNull } from "@/lib/supabase";
 
 /**
  * Valida chave admin e presença do client service role.
@@ -20,7 +20,7 @@ export function assertAdminAccess(request: Request): NextResponse | null {
     return NextResponse.json({ error: "Acesso não autorizado." }, { status: 401 });
   }
 
-  if (!supabaseAdmin) {
+  if (!getSupabaseAdminOrNull()) {
     return NextResponse.json(
       { error: "Defina SUPABASE_SERVICE_ROLE_KEY no ambiente." },
       { status: 500 }
@@ -31,5 +31,5 @@ export function assertAdminAccess(request: Request): NextResponse | null {
 }
 
 export function getSupabaseAdmin() {
-  return supabaseAdmin!;
+  return getSupabaseAdminOrNull()!;
 }

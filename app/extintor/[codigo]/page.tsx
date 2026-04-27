@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { InspecaoForm } from "@/components/inspecao-form";
-import { supabase, supabaseAdmin } from "@/lib/supabase";
+import { getSupabase, getSupabaseAdminOrNull } from "@/lib/supabase";
 import type { Extintor } from "@/lib/types";
 
 type Props = {
@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 export default async function ExtintorPage({ params }: Props) {
   const { codigo } = await params;
   const codigoNormalizado = decodeURIComponent(codigo).trim();
-  const client = supabaseAdmin ?? supabase;
+  const client = getSupabaseAdminOrNull() ?? getSupabase();
   const codigosTentativa = buildCodigoAlternatives(codigoNormalizado);
   let data: Extintor | null = null;
   let error: Error | null = null;
