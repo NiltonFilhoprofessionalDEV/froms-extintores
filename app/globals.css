@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background: #f5f7fb;
+  color: #0f172a;
+}
+
+input,
+button {
+  font: inherit;
+}
