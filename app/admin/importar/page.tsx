@@ -16,7 +16,8 @@ export default function ImportarExtintoresPage() {
           Importação e exportação protegidas pela mesma chave
         </p>
 
-        <ImportExcelForm adminKey={adminKey} onAdminKeyChange={setAdminKey} />
+        <ImportExcelForm adminKey={adminKey} onAdminKeyChange={setAdminKey} destino="extintores" />
+        <ImportExcelForm adminKey={adminKey} onAdminKeyChange={setAdminKey} destino="hidrantes" />
         <AdminExcelExports adminKey={adminKey} />
 
         <Link

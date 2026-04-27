@@ -1,68 +1,52 @@
 import Link from "next/link";
-import { getSupabase, getSupabaseAdminOrNull } from "@/lib/supabase";
-import type { ExtintorStatusMes, StatusMesPainel } from "@/lib/types";
+import { Flame, Droplets, ShieldCheck } from "lucide-react";
 
-export const dynamic = "force-dynamic";
-
-export default async function HomePage() {
-  const client = getSupabaseAdminOrNull() ?? getSupabase();
-  const { data, error } = await client
-    .from("vw_extintores_status_mes")
-    .select("codigo,status_mes")
-    .order("codigo", { ascending: true });
-
-  const extintores = (data ?? []) as ExtintorStatusMes[];
-
+export default function HomePage() {
   return (
-    <main className="mx-auto min-h-screen w-full max-w-4xl p-4 sm:p-6">
-      <section className="rounded-2xl border-2 border-slate-900 bg-white p-4 sm:p-6">
-        <h1 className="text-center text-2xl font-black tracking-wide sm:text-3xl">
-          INSPEÇÃO EXTINTOR
+    <main className="flex min-h-dvh flex-col items-center justify-center bg-canvas px-4 py-10">
+      {/* Logo / Brand bar */}
+      <header className="mb-8 flex flex-col items-center gap-2 text-center">
+        <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-700 shadow-card">
+          <ShieldCheck className="h-8 w-8 text-white" strokeWidth={1.8} />
+        </span>
+        <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">
+          Sistema de Inspeção
         </h1>
-        <p className="mt-1 text-center text-sm text-slate-500">Selecione o número do extintor</p>
+        <p className="text-sm text-slate-500">Selecione o tipo de conferência</p>
+      </header>
 
-        {error ? (
-          <p className="rounded-lg bg-red-100 p-3 text-sm text-red-700">
-            Erro ao consultar status dos extintores: {error.message}
-          </p>
-        ) : null}
+      {/* Cards */}
+      <div className="grid w-full max-w-sm gap-4">
+        <Link
+          href="/extintores"
+          className="group flex min-h-[96px] items-center gap-4 rounded-2xl bg-danger-600 px-6 py-5 text-white shadow-card transition hover:bg-danger-700 active:scale-[0.98]"
+        >
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/15">
+            <Flame className="h-7 w-7" strokeWidth={1.8} aria-hidden />
+          </span>
+          <span className="flex flex-col">
+            <span className="text-lg font-bold leading-tight">Extintores</span>
+            <span className="text-sm font-normal text-red-100">Inspeção de extintores</span>
+          </span>
+        </Link>
 
-        <div className="mb-4 flex flex-wrap gap-3 text-xs text-slate-600">
-          <span className="inline-flex items-center gap-1">
-            <span className="inline-block h-3 w-3 rounded border border-slate-900 bg-white" /> Sem inspeção no mês
+        <Link
+          href="/hidrantes"
+          className="group flex min-h-[96px] items-center gap-4 rounded-2xl bg-brand-700 px-6 py-5 text-white shadow-card transition hover:bg-brand-800 active:scale-[0.98]"
+        >
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/15">
+            <Droplets className="h-7 w-7" strokeWidth={1.8} aria-hidden />
           </span>
-          <span className="inline-flex items-center gap-1">
-            <span className="inline-block h-3 w-3 rounded border border-green-800 bg-green-500" /> Última inspeção OK
+          <span className="flex flex-col">
+            <span className="text-lg font-bold leading-tight">Hidrantes</span>
+            <span className="text-sm font-normal text-blue-100">Inspeção de hidrantes</span>
           </span>
-          <span className="inline-flex items-center gap-1">
-            <span className="inline-block h-3 w-3 rounded border border-red-800 bg-red-500" /> Última com não conforme
-          </span>
-        </div>
+        </Link>
+      </div>
 
-        <div className="grid grid-cols-4 gap-3 sm:grid-cols-5 md:grid-cols-6">
-          {extintores.map((extintor) => (
-            <Link
-              key={extintor.codigo}
-              href={`/extintor/${extintor.codigo}`}
-              className={`flex h-16 items-center justify-center rounded-xl border-2 text-xl font-bold shadow-sm transition active:scale-95 sm:h-20 sm:text-2xl ${painelClass(
-                extintor.status_mes
-              )}`}
-            >
-              {extintor.codigo}
-            </Link>
-          ))}
-        </div>
-      </section>
+      <footer className="mt-10 text-xs text-slate-400">
+        Segurança contra incêndio · Equipe técnica
+      </footer>
     </main>
   );
-}
-
-function painelClass(status: StatusMesPainel | string | undefined) {
-  if (status === "nao_conforme") {
-    return "border-red-800 bg-red-500 text-white";
-  }
-  if (status === "conforme") {
-    return "border-green-800 bg-green-500 text-white";
-  }
-  return "border-slate-900 bg-white text-slate-900";
 }

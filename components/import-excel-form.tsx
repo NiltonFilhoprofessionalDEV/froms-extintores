@@ -3,15 +3,40 @@
 import { useRef, useState, type FormEvent } from "react";
 import { Upload } from "lucide-react";
 
+type Destino = "extintores" | "hidrantes";
+
 type Props = {
   adminKey: string;
   onAdminKeyChange: (value: string) => void;
+  destino?: Destino;
 };
 
-export function ImportExcelForm({ adminKey, onAdminKeyChange }: Props) {
+const config: Record<
+  Destino,
+  { titulo: string; endpoint: string; ajuda: string }
+> = {
+  extintores: {
+    titulo: "Importar extintores via Excel",
+    endpoint: "/api/import-extintores",
+    ajuda: "Planilha de cadastro de extintores."
+  },
+  hidrantes: {
+    titulo: "Importar hidrantes via Excel",
+    endpoint: "/api/import-hidrantes",
+    ajuda:
+      "Cabeçalhos: CÓDIGO, PAVIMENTO, LOCAL DETALHADO, QUANTIDADE DE MANGUEIRAS, datas M-1…M-4, QUANTIDADE DE CHAVES STORZ, QUANTIDADE DE ESGUICHO."
+  }
+};
+
+export function ImportExcelForm({
+  adminKey,
+  onAdminKeyChange,
+  destino = "extintores"
+}: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const { titulo, endpoint, ajuda } = config[destino];
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -32,7 +57,7 @@ export function ImportExcelForm({ adminKey, onAdminKeyChange }: Props) {
 
     setLoading(true);
     try {
-      const response = await fetch("/api/import-extintores", {
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "x-admin-key": adminKey.trim()
@@ -72,7 +97,8 @@ export function ImportExcelForm({ adminKey, onAdminKeyChange }: Props) {
       onSubmit={handleSubmit}
       className="mb-6 flex w-full flex-col gap-3 rounded-xl border bg-white p-4 shadow-sm"
     >
-      <p className="text-sm font-semibold text-slate-700">Importar extintores via Excel</p>
+      <p className="text-sm font-semibold text-slate-700">{titulo}</p>
+      <p className="text-xs text-slate-500">{ajuda}</p>
       <input
         required
         value={adminKey}

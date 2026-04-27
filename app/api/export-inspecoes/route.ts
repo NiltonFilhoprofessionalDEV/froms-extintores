@@ -25,7 +25,7 @@ export async function GET(request: Request) {
   const { data, error } = await getSupabaseAdmin()
     .from("inspecoes")
     .select(
-      "id,extintor_id,data_inspecao,conferente,observacoes,pergunta_1,pergunta_2,pergunta_3,pergunta_4,pergunta_5,pergunta_6,pergunta_7,pergunta_8"
+      "id,extintor_id,data_inspecao,conferente,equipe,observacoes,pergunta_1,pergunta_2,pergunta_3,pergunta_4,pergunta_5,pergunta_6,pergunta_7,pergunta_8,justificativa_nc_1,justificativa_nc_2,justificativa_nc_3,justificativa_nc_4,justificativa_nc_5,justificativa_nc_6,justificativa_nc_7,justificativa_nc_8"
     )
     .order("data_inspecao", { ascending: false });
 
@@ -38,15 +38,24 @@ export async function GET(request: Request) {
     "CODIGO EXTINTOR": row.extintor_id,
     "DATA/HORA": formatDateTimeBr(row.data_inspecao),
     "CONFERENTE": row.conferente,
+    "EQUIPE": row.equipe ?? "",
     "OBSERVACOES": row.observacoes ?? "",
     "P1 - Mapa": formatResposta(row.pergunta_1),
+    "P1 - Detalhe NC": row.justificativa_nc_1 ?? "",
     "P2 - Dados": formatResposta(row.pergunta_2),
+    "P2 - Detalhe NC": row.justificativa_nc_2 ?? "",
     "P3 - Sinalizacao": formatResposta(row.pergunta_3),
+    "P3 - Detalhe NC": row.justificativa_nc_3 ?? "",
     "P4 - Mangueira": formatResposta(row.pergunta_4),
+    "P4 - Detalhe NC": row.justificativa_nc_4 ?? "",
     "P5 - Bico/difusor": formatResposta(row.pergunta_5),
+    "P5 - Detalhe NC": row.justificativa_nc_5 ?? "",
     "P6 - Alca/gatilho/lacre/pino": formatResposta(row.pergunta_6),
+    "P6 - Detalhe NC": row.justificativa_nc_6 ?? "",
     "P7 - Pressao": formatResposta(row.pergunta_7),
-    "P8 - Cilindro": formatResposta(row.pergunta_8)
+    "P7 - Detalhe NC": row.justificativa_nc_7 ?? "",
+    "P8 - Cilindro": formatResposta(row.pergunta_8),
+    "P8 - Detalhe NC": row.justificativa_nc_8 ?? ""
   }));
 
   const worksheet = XLSX.utils.json_to_sheet(rows.length ? rows : [{ "ID": "" }]);

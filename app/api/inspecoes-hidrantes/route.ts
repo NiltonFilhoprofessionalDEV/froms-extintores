@@ -7,7 +7,7 @@ import {
 import { getSupabase, getSupabaseAdminOrNull } from "@/lib/supabase";
 
 type Body = {
-  extintor_id?: string;
+  hidrante_id?: string;
   conferente?: string;
   equipe?: string;
   observacoes?: string;
@@ -41,7 +41,7 @@ export async function POST(request: Request) {
   const body = (await request.json()) as Body;
 
   if (
-    !body.extintor_id ||
+    !body.hidrante_id ||
     !body.conferente ||
     !isEquipe(body.equipe) ||
     !isRespostaValida(body.pergunta_1) ||
@@ -54,7 +54,7 @@ export async function POST(request: Request) {
     !isRespostaValida(body.pergunta_8)
   ) {
     return NextResponse.json(
-      { error: "Campos obrigatórios inválidos para salvar inspeção." },
+      { error: "Campos obrigatórios inválidos para salvar inspeção de hidrante." },
       { status: 400 }
     );
   }
@@ -81,8 +81,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: jusErro }, { status: 400 });
   }
 
-  const { error } = await client.from("inspecoes").insert({
-    extintor_id: body.extintor_id,
+  const { error } = await client.from("inspecoes_hidrantes").insert({
+    hidrante_id: body.hidrante_id,
     conferente: body.conferente,
     equipe: body.equipe,
     observacoes: body.observacoes ?? "",

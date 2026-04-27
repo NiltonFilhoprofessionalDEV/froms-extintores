@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { ChevronLeft, Flame } from "lucide-react";
+import { ChevronLeft, Droplets } from "lucide-react";
 import { ChecklistNaoConformeResumo } from "@/components/checklist-nao-conforme-resumo";
 import { InspecaoForm } from "@/components/inspecao-form";
-import { PERGUNTAS_EXTINTOR } from "@/lib/perguntas-inspecao";
+import { PERGUNTAS_HIDRANTE } from "@/lib/perguntas-inspecao";
 import { getSupabase, getSupabaseAdminOrNull } from "@/lib/supabase";
-import { fetchUltimaInspecaoNaoConformeMesExtintor } from "@/lib/ultima-inspecao-mes";
-import type { Extintor } from "@/lib/types";
+import { fetchUltimaInspecaoNaoConformeMesHidrante } from "@/lib/ultima-inspecao-mes";
+import type { Hidrante } from "@/lib/types";
 
 type Props = {
   params: Promise<{ codigo: string }>;
@@ -14,23 +14,24 @@ type Props = {
 
 export const dynamic = "force-dynamic";
 
-export default async function ExtintorPage({ params, searchParams }: Props) {
+export default async function HidrantePage({ params, searchParams }: Props) {
   const { codigo } = await params;
   const { correcao } = await searchParams;
   const codigoNormalizado = decodeURIComponent(codigo).trim();
   const client = getSupabaseAdminOrNull() ?? getSupabase();
   const codigosTentativa = buildCodigoAlternatives(codigoNormalizado);
-  let data: Extintor | null = null;
+  let data: Hidrante | null = null;
   let error: Error | null = null;
+
+  const selectCols =
+    "codigo,pavimento,local_detalhado,quantidade_mangueiras,data_teste_hidrostatico_m1,data_teste_hidrostatico_m2,data_teste_hidrostatico_m3,data_teste_hidrostatico_m4,quantidade_chaves_storz,quantidade_esguicho";
 
   for (const codigoBusca of codigosTentativa) {
     const response = await client
-      .from("extintores")
-      .select(
-        "codigo,pavimento,local,n_inmetro,tipo,tamanho,capacidade,vencimento_nivel_2,vencimento_nivel_3"
-      )
+      .from("hidrantes")
+      .select(selectCols)
       .eq("codigo", codigoBusca)
-      .maybeSingle<Extintor>();
+      .maybeSingle<Hidrante>();
 
     if (response.error) {
       error = response.error;
@@ -47,16 +48,16 @@ export default async function ExtintorPage({ params, searchParams }: Props) {
     return (
       <main className="flex min-h-dvh items-center justify-center bg-canvas px-4 py-8">
         <div className="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-card">
-          <span className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-danger-50">
-            <Flame className="h-6 w-6 text-danger-600" />
+          <span className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50">
+            <Droplets className="h-6 w-6 text-brand-700" />
           </span>
-          <h1 className="text-lg font-extrabold text-slate-900">Extintor não encontrado</h1>
+          <h1 className="text-lg font-extrabold text-slate-900">Hidrante não encontrado</h1>
           <p className="mt-1 text-sm text-slate-500">
             Código <span className="font-semibold text-slate-700">{codigoNormalizado}</span> não localizado.
           </p>
           {error ? <p className="mt-2 text-xs text-danger-600">{error.message}</p> : null}
           <Link
-            href="/extintores"
+            href="/hidrantes"
             className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"
           >
             <ChevronLeft className="h-4 w-4" /> Voltar ao painel
@@ -69,7 +70,7 @@ export default async function ExtintorPage({ params, searchParams }: Props) {
   const mostrarResumoNc = correcao === "1";
   const resumoNc =
     mostrarResumoNc && data
-      ? await fetchUltimaInspecaoNaoConformeMesExtintor(client, data.codigo)
+      ? await fetchUltimaInspecaoNaoConformeMesHidrante(client, data.codigo)
       : null;
 
   return (
@@ -77,18 +78,18 @@ export default async function ExtintorPage({ params, searchParams }: Props) {
       {/* Header */}
       <div className="mb-5 flex items-center gap-3">
         <Link
-          href="/extintores"
+          href="/hidrantes"
           className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition hover:bg-slate-50"
           aria-label="Voltar"
         >
           <ChevronLeft className="h-5 w-5" />
         </Link>
         <div className="flex items-center gap-2">
-          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-danger-600">
-            <Flame className="h-5 w-5 text-white" strokeWidth={1.8} />
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-700">
+            <Droplets className="h-5 w-5 text-white" strokeWidth={1.8} />
           </span>
           <div>
-            <p className="text-xs font-medium uppercase tracking-wider text-slate-500">Extintor</p>
+            <p className="text-xs font-medium uppercase tracking-wider text-slate-500">Hidrante</p>
             <h1 className="text-xl font-extrabold leading-tight text-slate-900">
               N° {data.codigo}
             </h1>
@@ -111,7 +112,7 @@ export default async function ExtintorPage({ params, searchParams }: Props) {
       {/* Resumo não conforme */}
       {resumoNc ? (
         <div className="mb-4">
-          <ChecklistNaoConformeResumo inspecao={resumoNc} perguntas={PERGUNTAS_EXTINTOR} />
+          <ChecklistNaoConformeResumo inspecao={resumoNc} perguntas={PERGUNTAS_HIDRANTE} />
         </div>
       ) : null}
 
@@ -122,20 +123,25 @@ export default async function ExtintorPage({ params, searchParams }: Props) {
         </p>
         <dl className="grid grid-cols-1 gap-y-2 text-sm sm:grid-cols-2 sm:gap-x-6">
           <InfoItem label="Pavimento" value={data.pavimento} />
-          <InfoItem label="Local" value={data.local} />
-          <InfoItem label="N° INMETRO" value={data.n_inmetro} />
-          <InfoItem label="Tipo" value={data.tipo} />
-          <InfoItem label="Tamanho" value={data.tamanho} />
-          <InfoItem label="Capacidade extintora" value={data.capacidade} />
+          <InfoItem label="Local detalhado" value={data.local_detalhado} />
+          <InfoItem label="Qtd. mangueiras" value={String(data.quantidade_mangueiras)} />
+          <InfoItem label="Qtd. chaves STORZ" value={String(data.quantidade_chaves_storz)} />
+          <InfoItem label="Qtd. esguicho" value={String(data.quantidade_esguicho)} />
           <InfoItem
-            label="Vencimento nível 2"
-            value={formatDate(data.vencimento_nivel_2)}
-            highlight
+            label="Teste hidrostático M-1"
+            value={formatDateOrDash(data.data_teste_hidrostatico_m1)}
           />
           <InfoItem
-            label="Vencimento nível 3"
-            value={formatDate(data.vencimento_nivel_3)}
-            highlight
+            label="Teste hidrostático M-2"
+            value={formatDateOrDash(data.data_teste_hidrostatico_m2)}
+          />
+          <InfoItem
+            label="Teste hidrostático M-3"
+            value={formatDateOrDash(data.data_teste_hidrostatico_m3)}
+          />
+          <InfoItem
+            label="Teste hidrostático M-4"
+            value={formatDateOrDash(data.data_teste_hidrostatico_m4)}
           />
         </dl>
       </div>
@@ -145,7 +151,7 @@ export default async function ExtintorPage({ params, searchParams }: Props) {
         <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-slate-400">
           Checklist de inspeção
         </p>
-        <InspecaoForm codigo={data.codigo} modo="extintor" />
+        <InspecaoForm codigo={data.codigo} modo="hidrante" />
       </div>
     </main>
   );
@@ -168,24 +174,21 @@ function buildCodigoAlternatives(rawCodigo: string) {
 
 function InfoItem({
   label,
-  value,
-  highlight = false
+  value
 }: {
   label: string;
   value: string;
-  highlight?: boolean;
 }) {
   return (
     <div>
       <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">{label}</dt>
-      <dd className={`mt-0.5 font-medium ${highlight ? "text-danger-700" : "text-slate-800"}`}>
-        {value}
-      </dd>
+      <dd className="mt-0.5 font-medium text-slate-800">{value}</dd>
     </div>
   );
 }
 
-function formatDate(value: string) {
+function formatDateOrDash(value: string | null) {
+  if (!value) return "—";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
   return date.toLocaleDateString("pt-BR");

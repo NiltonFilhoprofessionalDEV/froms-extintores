@@ -2,12 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  background: #f5f7fb;
-  color: #0f172a;
+/* ── Base ─────────────────────────────────────── */
+:root {
+  --color-canvas:  #f1f5f9;
+  --color-surface: #ffffff;
+  --color-border:  #e2e8f0;
+  --color-text:    #0f172a;
 }
 
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background-color: var(--color-canvas);
+  color: var(--color-text);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  min-height: 100dvh;
+}
+
+/* ── Inputs & buttons inherit font ────────────── */
 input,
+select,
+textarea,
 button {
   font: inherit;
+}
+
+/* ── Focus ring padrão acessível ─────────────── */
+:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+
+/* ── Scroll suave ────────────────────────────── */
+* {
+  scroll-behavior: smooth;
 }
