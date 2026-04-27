@@ -20,14 +20,6 @@ export default async function HomePage() {
           INSPEÇÃO EXTINTOR
         </h1>
         <p className="mt-1 text-center text-sm text-slate-500">Selecione o número do extintor</p>
-        <div className="mb-4 mt-3 flex justify-end">
-          <Link
-            href="/historico"
-            className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100"
-          >
-            Ver Histórico
-          </Link>
-        </div>
 
         {error ? (
           <p className="rounded-lg bg-red-100 p-3 text-sm text-red-700">
