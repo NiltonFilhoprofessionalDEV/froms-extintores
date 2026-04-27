@@ -1,12 +1,17 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 import { Upload } from "lucide-react";
 
-export function ImportExcelForm() {
+type Props = {
+  adminKey: string;
+  onAdminKeyChange: (value: string) => void;
+};
+
+export function ImportExcelForm({ adminKey, onAdminKeyChange }: Props) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
-  const [adminKey, setAdminKey] = useState("");
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -53,7 +58,7 @@ export function ImportExcelForm() {
       }
 
       form.reset();
-      setAdminKey("");
+      if (fileInputRef.current) fileInputRef.current.value = "";
       setMessage(payload.message ?? "Importação realizada.");
     } catch {
       setMessage("Erro inesperado ao importar planilha.");
@@ -71,12 +76,13 @@ export function ImportExcelForm() {
       <input
         required
         value={adminKey}
-        onChange={(event) => setAdminKey(event.target.value)}
+        onChange={(event) => onAdminKeyChange(event.target.value)}
         type="password"
         placeholder="Chave de administrador"
         className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
       />
       <input
+        ref={fileInputRef}
         required
         name="arquivo"
         type="file"

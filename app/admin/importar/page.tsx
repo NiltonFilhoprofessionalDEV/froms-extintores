@@ -1,16 +1,23 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { AdminExcelExports } from "@/components/admin-excel-exports";
 import { ImportExcelForm } from "@/components/import-excel-form";
 
 export default function ImportarExtintoresPage() {
+  const [adminKey, setAdminKey] = useState("");
+
   return (
     <main className="mx-auto min-h-screen w-full max-w-xl p-4 sm:p-6">
       <section className="rounded-2xl border-2 border-slate-900 bg-white p-4 sm:p-6">
-        <h1 className="text-center text-2xl font-black sm:text-3xl">IMPORTAR EXTINTORES</h1>
+        <h1 className="text-center text-2xl font-black sm:text-3xl">ADMINISTRAÇÃO</h1>
         <p className="mb-4 mt-1 text-center text-sm text-slate-500">
-          Tela administrativa protegida por chave
+          Importação e exportação protegidas pela mesma chave
         </p>
 
-        <ImportExcelForm />
+        <ImportExcelForm adminKey={adminKey} onAdminKeyChange={setAdminKey} />
+        <AdminExcelExports adminKey={adminKey} />
 
         <Link
           href="/"

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import * as XLSX from "xlsx";
-import { supabaseAdmin } from "@/lib/supabase";
+import { assertAdminAccess, getSupabaseAdmin } from "@/lib/admin-api";
 
 type ExtintorImport = {
   codigo: string;
@@ -69,26 +69,8 @@ function excelDateToIso(value: unknown): string {
 
 export async function POST(request: Request) {
   try {
-    const adminImportKey = process.env.ADMIN_IMPORT_KEY;
-    const sentKey = request.headers.get("x-admin-key");
-
-    if (!adminImportKey) {
-      return NextResponse.json(
-        { error: "Defina ADMIN_IMPORT_KEY no ambiente para proteger a importação." },
-        { status: 500 }
-      );
-    }
-
-    if (!sentKey || sentKey !== adminImportKey) {
-      return NextResponse.json({ error: "Acesso não autorizado." }, { status: 401 });
-    }
-
-    if (!supabaseAdmin) {
-      return NextResponse.json(
-        { error: "Defina SUPABASE_SERVICE_ROLE_KEY para permitir importação." },
-        { status: 500 }
-      );
-    }
+    const denied = assertAdminAccess(request);
+    if (denied) return denied;
 
     const formData = await request.formData();
     const file = formData.get("arquivo");
@@ -167,7 +149,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const { error } = await supabaseAdmin.from("extintores").upsert(payload, {
+    const { error } = await getSupabaseAdmin().from("extintores").upsert(payload, {
       onConflict: "codigo"
     });
 
